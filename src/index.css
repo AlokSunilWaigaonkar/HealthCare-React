@@ -1,0 +1,96 @@
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.bg-img{
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.login-body{
+  text-align: center;
+  position: relative;
+  top: 50%;
+  left: 35%;
+  justify-content: center;
+  margin-top: 10vw;
+}
+
+.login-card{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
+  height: 55vh;
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.1); /* Transparent White */
+    backdrop-filter: blur(10px); /* Blur Effect */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    text-align: center;
+
+  border: none;
+  border-radius:50px;
+
+}
+.login-title{
+  color: #fff;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+.login-form{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+.input-section{
+  width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    color: #7b7777;
+}
+::placeholder{
+  color: #9a9393;
+    font-size: 14px;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.submit-button{
+  background: linear-gradient(45deg, #42C2A7, #2B6777);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.submit-button:hover{
+  background: linear-gradient(45deg, #2B6777, #42C2A7);
+}
