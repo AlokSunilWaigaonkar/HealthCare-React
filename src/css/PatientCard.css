@@ -1,0 +1,52 @@
+body {
+    padding-top: 60px; /* Adjust based on navbar height */
+  }
+
+.patient-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    padding: 20px;
+    width: 260px;
+    color: white;
+    transition: 0.3s;
+    margin-top: 47px;
+    margin-left: 30px;
+  }
+  
+  .patient-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .patient-name {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .patient-info {
+    font-size: 14px;
+    color: #5f6466;
+    margin: 5px 0;
+  }
+  
+  .contact-btn {
+    background: linear-gradient(45deg, #42C2A7, #2B6777);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+    width: 100%;
+  }
+  
+  .contact-btn:hover {
+    background: linear-gradient(45deg, #2B6777, #42C2A7);
+  }
+  

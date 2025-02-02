@@ -1,3 +1,6 @@
+html, body {
+  overflow-x: hidden;
+}
 
 body {
   margin: 0;
@@ -47,7 +50,6 @@ code {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     width: 350px;
     text-align: center;
-
   border: none;
   border-radius:50px;
 
@@ -89,7 +91,7 @@ code {
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 1s;
 }
 .submit-button:hover{
   background: linear-gradient(45deg, #2B6777, #42C2A7);

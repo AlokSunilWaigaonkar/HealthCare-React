@@ -1,11 +1,17 @@
 import React from 'react'
+import Navbar from './Navbar'
+import "/Users/alokwaigaonkar/health_care/src/css/dashBoard.css"
+import bgImg from "/Users/alokwaigaonkar/health_care/src/images/background.jpeg"
+import PatientList from './PatientList'
 
 function DoctorDashBoard() {
   return (
     <>
-    <h1>Doctor Dash Board</h1>
+    <img src={bgImg} alt="bg" className="bg-img" />
+    <Navbar/>
+    <PatientList/>
     </>
   )
 }
 
-export default DoctorDashBoard
+export default DoctorDashBoard;
