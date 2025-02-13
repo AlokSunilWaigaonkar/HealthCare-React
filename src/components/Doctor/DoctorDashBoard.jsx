@@ -1,6 +1,6 @@
 import React from 'react'
 import Navbar from './Navbar'
-import "/Users/alokwaigaonkar/health_care/src/css/dashBoard.css"
+import "../../css/dashBoard.css"
 import bgImg from "/Users/alokwaigaonkar/health_care/src/images/background.jpeg"
 import PatientList from './PatientList'
 

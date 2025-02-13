@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import bgImg from "/Users/alokwaigaonkar/health_care/src/images/background.jpeg";
+import Navbar from "../MainPage/Navbar";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -51,6 +53,7 @@ export default function Login() {
 
   return (
     <>
+    <Navbar/>
       <div className="login">
         <img src={bgImg} alt="Login-bg" className="bg-img" />
         <div className="login-body">

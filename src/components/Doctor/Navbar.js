@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from "react";
-import "/Users/alokwaigaonkar/health_care/src/css/navbar.css";
-import Logo from "../images/logo.png";
-import Data from "../data"; // Importing the patient data
+import "../../css/navbar.css";
+import Logo from "../../images/logo.png";
+import Data from "../../data"; // Importing the patient data
 import PatientCard from "./PatientCard";
 import { useNavigate } from "react-router-dom";
 
