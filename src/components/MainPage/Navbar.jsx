@@ -11,11 +11,11 @@ export default function Navbar() {
         <a className="navbar-brand" href="/">
           <img src={Logo} alt="Logo" style={{ width: "80px" }} />
         </a>
-        <h1 className="headLine" style={{color:"white"}}>SCP Group of Hospital</h1>
+        <h1 className="headLine" style={{color:"white"}}>SCP Group of Hospitals</h1>
 
         
         <div className="buttons">
-        <button className="nav-btn btn btn-outline-success">Sign in</button>
+        <Link to='/signup' className="nav-btn btn btn-outline-success">Sign up</Link>
           <div className="dropdown">
             <button
               className="btn nav-btn btn-outline-success"

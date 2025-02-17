@@ -1,15 +1,20 @@
-import React, { useState } from 'react'
-import Card from './Card'
-import HomeData from '../../../HomeData'
+import React from 'react'
 import '../../../css/home.css';
+import Facilities from './Facilities';
+import HeroSection from './HeroSection';
+import OurDoctors from './OurDoctors.jsx';
+import ContactUs from './ContactUs.jsx';
+import Footer from './Footer.jsx';
+
 
 export default function HomePage() {
-  const [homeData,setHomeData]=useState(HomeData)
   return (
     <div className='HomePage'>
-      {homeData.map((data,index)=>(
-        <Card key={index} Align={index % 2 === 0 ?`left` : `right`} Title={data.Title} Img={data.Image} Desc={data.Description} />
-      ))}
+      <HeroSection/>
+      <Facilities/>
+      <OurDoctors/>
+      <ContactUs/>
+      <Footer/>
     </div>
   )
 }
