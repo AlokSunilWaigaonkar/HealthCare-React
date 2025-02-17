@@ -25,7 +25,7 @@ body {
 }
 .dropdown-menu{
     position: absolute;
-    background-color: #f9f9f9;
+    color: aliceblue;
     display: none;
     z-index: 1;
     background: rgba(255, 255, 255, 0.1); /* Transparent White */
@@ -35,3 +35,38 @@ body {
     border-radius: 5px;
 }
 
+
+.HomePage{
+    margin-top: 5rem;
+    margin-left:2rem;
+    margin-right:2rem;
+}
+.card-container{
+    display: flex;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.home-card{
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    backdrop-filter: blur(10px); /* Smooth blur effect */
+}
+img{
+    
+    object-fit: cover;
+    
+
+}
+.card-body{
+
+}
+.left{
+    justify-content: flex-start; /* Align card to the left */
+}
+.right{
+    justify-content: flex-end; /* Align card to the right */
+}

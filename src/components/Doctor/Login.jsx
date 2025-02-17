@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import bgImg from "/Users/alokwaigaonkar/health_care/src/images/background.jpeg";
+import bgImg from "../../images/background.jpeg";
 import Navbar from "../MainPage/Navbar";
 
 
@@ -42,7 +42,7 @@ export default function Login() {
 
       // Redirect after 2 seconds
       setTimeout(() => {
-        navigate("/DoctorDashBoard");
+        navigate("/doctorDashBoard");
       }, 2000);
     } else {
       setMessage("Invalid Username or Password");
