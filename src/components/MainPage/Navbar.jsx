@@ -15,14 +15,16 @@ export default function Navbar() {
 
         
         <div className="buttons">
-        <Link to='/signup' className="nav-btn btn btn-outline-success">Sign up</Link>
+       <Link to='/signup' className={` nav-btn btn btn-outline-success  `}>Patient Sign Up</Link>
+          
+        
           <div className="dropdown">
             <button
               className="btn nav-btn btn-outline-success"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              Log in
+              Log In
             </button>
 
             <ul className="dropdown-menu " >
@@ -32,7 +34,7 @@ export default function Navbar() {
                 </Link>
               </li>
               <li>
-                <Link className="dropdown-item" href="/patientDashBoard">
+                <Link className="dropdown-item" to="/patientDashBoard">
                   A Patient
                 </Link>
               </li>

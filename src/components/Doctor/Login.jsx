@@ -53,7 +53,7 @@ export default function Login() {
 
   return (
     <>
-    <Navbar/>
+    <Navbar />
       <div className="login">
         <img src={bgImg} alt="Login-bg" className="bg-img" />
         <div className="login-body">

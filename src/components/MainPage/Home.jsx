@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div>
         <img className='bg-img' src={Homebg} alt="" />
-      <Navbar/>
+      <Navbar />
       <HomePage/>
     </div>
   )
