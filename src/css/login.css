@@ -1,0 +1,91 @@
+/* Login background */
+.login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+    background: linear-gradient(135deg, #e0f7fa, #f1fdfd);
+  }
+  
+  /* Centering login body */
+  .login-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Login card styles */
+  .login-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 40px 30px;
+    max-width: 400px;          /* Controls card width */
+    transition: all 0.3s ease;
+  }
+  
+  .login-card:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Card inner content */
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Login title */
+  .login-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #003366;
+    margin-bottom: 30px;
+  }
+  
+  /* Inputs */
+  .input-sec{
+    width: 100%;
+    max-width: 280px; /* Limit width for nicer layout */
+  border: 1px solid #ccddee;
+  border-radius: 10px;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  }
+  
+  .input-sec:focus {
+    outline: none;
+    border-color: #00acc1;
+    box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.2);
+  }
+  
+  /* background-color: #0077a6; */
+  /* Submit button */
+  .submit-button {
+    margin-top: 20px;
+    padding: 10px 30px;
+    width: 200px;
+    border-radius: 10px;
+    background-color: #0077a6; 
+    color: white;
+    border: none;
+    font-weight: 500;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transition: background 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #005f88;
+    cursor: pointer;
+  }

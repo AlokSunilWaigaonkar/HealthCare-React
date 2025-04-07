@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import bgImg from "../../images/background.jpeg";
+// import axios from "axios";
+import "../../css/login.css";
 import Navbar from "../MainPage/Navbar";
-
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,51 +14,64 @@ export default function Login() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    if (name === "username") {
-      setUserName(value);
-    }
-    if (name === "password") {
-      setPassword(value);
-    }
+    if (name === "username") setUserName(value);
+    if (name === "password") setPassword(value);
   };
 
-  const validCredentials = {
-    username: "doc123",
-    password: "doc@123",
-  };
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
     if (userName === "" || password === "") {
       setMessage("⚠️ Please fill all the fields");
       setErrorClass("error-box shake");
-      setTimeout(() => setErrorClass("error-box"), 500); // Remove shake effect after animation
+      setTimeout(() => setErrorClass("error-box"), 500);
       return;
     }
 
-    if (userName === validCredentials.username && password === validCredentials.password) {
-      setMessage("");
+    // Dummy login logic
+    if (userName.startsWith("doc") && password === "doc@123") {
       setIsLoggedIn(true);
-
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        navigate("/doctorDashBoard");
-      }, 2000);
+      setMessage("");
+      setTimeout(() => navigate("/doctorDashboard"), 2000);
+    } else if (userName.startsWith("pat") && password === "pat@123") {
+      setIsLoggedIn(true);
+      setMessage("");
+      setTimeout(() => navigate("/patientDashboard"), 2000);
     } else {
-      setMessage("Invalid Username or Password");
+      setMessage("Invalid credentials. Try docxxx/doc@123 or patxxx/pat@123");
       setErrorClass("error-box shake");
       setTimeout(() => setErrorClass("error-box"), 500);
     }
+
+    /* 
+    // Uncomment this for backend integration
+    try {
+      const response = await axios.post("http://localhost:8080/api/login", {
+        username: userName,
+        password: password,
+      });
+
+      const { role } = response.data;
+
+      if (role === "doctor") {
+        navigate("/doctorDashboard");
+      } else if (role === "patient") {
+        navigate("/patientDashboard");
+      } else {
+        setMessage("Unauthorized Role");
+      }
+    } catch (error) {
+      setMessage("Invalid credentials");
+    }
+    */
   };
 
   return (
     <>
-    <Navbar />
+      <Navbar />
       <div className="login">
-        <img src={bgImg} alt="Login-bg" className="bg-img" />
         <div className="login-body">
           {isLoggedIn ? (
-            // Success Screen
             <div className="success-screen">
               <b>Login Successful</b>
               <p>Redirecting...</p>
@@ -68,26 +81,35 @@ export default function Login() {
               <div className="card-body">
                 <h1 className="login-title">Log In</h1>
                 {message && <div className={errorClass}>{message}</div>}
-                <form action="" className="login-form" onSubmit={handleSubmit}>
+                <form className="login-form" onSubmit={handleSubmit}>
                   <input
                     type="text"
                     name="username"
-                    placeholder="Doc Id "
-                    className="m-3 p-2 px-3 input-section"
+                    placeholder="Enter User ID"
+                    className="input-sec"
                     style={{ borderRadius: "5px" }}
                     onChange={handleInputChange}
                   />
                   <input
                     type="password"
                     name="password"
-                    placeholder="Doc Key"
-                    className="m-3 p-2 px-3 input-section"
+                    placeholder="Enter Password"
+                    className="input-sec"
                     style={{ borderRadius: "5px" }}
                     onChange={handleInputChange}
                   />
-                  <button type="submit" className="btn submit-button btn-outline-success m-4">
+                  <button
+                    type="submit"
+                    className="btn submit-button btn-outline-success m-4"
+                  >
                     Submit
                   </button>
+                  <p className="text-center mt-3">
+                    Don’t have an account?{" "}
+                    <a href="/signup" style={{ textDecoration: "underline" }}>
+                      Sign up here
+                    </a>
+                  </p>
                 </form>
               </div>
             </div>

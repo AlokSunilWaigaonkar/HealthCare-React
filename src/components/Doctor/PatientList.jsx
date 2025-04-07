@@ -4,6 +4,7 @@ import Data from "../../data";
 
 export default function PatientList() {
   const [patients, setPatients] = useState(Data || []); // Store patient data
+  const [selectedPatient, setSelectedPatient] = useState(null);
 
   return (
     <div>

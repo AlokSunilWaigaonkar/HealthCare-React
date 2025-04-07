@@ -1,0 +1,95 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(90deg, #f9f9f9, #e8ecef);
+    border-radius: 12px;
+    padding: 12px 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #dfe4ea;
+    z-index: 1000;
+    transition: all 0.3s ease-in-out;
+    font-family: 'Segoe UI', sans-serif;
+    color: #002244;
+  }
+  .logo{
+    height: 50px;
+    width: auto;
+  }
+  .header {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  
+  .navbar-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2d3436;
+  }
+  
+  .nav-btn {
+    background: linear-gradient(135deg, #3ba4b8, #007b99);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .nav-btn:hover {
+    background: linear-gradient(135deg, #007b99, #3ba4b8);
+    transform: translateY(-2px);
+  }
+  
+  .user-icon {
+    background-color: #3ba4b8;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    text-align: center;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .dropdown {
+    position: absolute;
+    top: 65px;
+    right: 24px;
+    background-color: #ffffff;
+    border: 1px solid #ced6e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    z-index: 1500;
+    min-width: 160px;
+  }
+  
+  .dropdown button {
+    background: none;
+    border: none;
+    width: 100%;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 14px;
+    color: #2d3436;
+    cursor: pointer;
+  }
+  
+  .dropdown button:hover {
+    background-color: #f1f2f6;
+  }

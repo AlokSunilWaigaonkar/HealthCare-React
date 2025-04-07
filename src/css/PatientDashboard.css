@@ -1,0 +1,87 @@
+.dashboard-wrapper {
+    padding: 2rem;
+    background-color: #f4f7fc;
+    min-height: 100vh;
+  }
+  
+  .dashboard-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #1f3b57;
+  }
+  
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 40px 30px;
+    max-width: 400px;          /* Controls card width */
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+  
+  .card h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+  }
+  
+  .card ul {
+    padding-left: 1.2rem;
+  }
+  
+  .card li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+  
+  .card p {
+    font-size: 0.95rem;
+    color: #555;
+  }
+  
+  .clickable-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-primary {
+    background-color: #0077a6; 
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    margin-top: 1rem;
+    cursor: pointer;
+  }
+  
+  .btn-primary:hover {
+    background-color: #005f88;
+    cursor: pointer;
+  }
+  
+  .btn-outline {
+    background-color: #0077a6; 
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-weight: 500;
+  }
+  
+  .btn-outline:hover {
+    background-color: #005f88;
+    cursor: pointer;
+  }

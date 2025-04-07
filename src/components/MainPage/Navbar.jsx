@@ -11,34 +11,19 @@ export default function Navbar() {
         <a className="navbar-brand" href="/">
           <img src={Logo} alt="Logo" style={{ width: "80px" }} />
         </a>
-        <h1 className="headLine" style={{color:"white"}}>SCP Group of Hospitals</h1>
+        <h1 className="header">SCP Group of Hospitals</h1>
 
         
         <div className="buttons">
-       <Link to='/signup' className={` nav-btn btn btn-outline-success  `}>Patient Sign Up</Link>
+       <Link to='/signup' className={` nav-btn btn btn-outline-success  `}>Sign Up</Link>
           
         
-          <div className="dropdown">
-            <button
+          <div >
+            <Link to="/login"
               className="btn nav-btn btn-outline-success"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
             >
               Log In
-            </button>
-
-            <ul className="dropdown-menu " >
-              <li>
-                <Link className="dropdown-item" to="/login">
-                  A Doctor
-                </Link>
-              </li>
-              <li>
-                <Link className="dropdown-item" to="/patientDashBoard">
-                  A Patient
-                </Link>
-              </li>
-            </ul>
+            </Link>
           </div>
         </div>
       </nav>

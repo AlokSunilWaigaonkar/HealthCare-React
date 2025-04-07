@@ -2,9 +2,9 @@ import React from "react";
 import Default from '../../../images/defaultImage.png' 
 
 const doctors = [
-  { name: "Dr. Aryan Mehta", specialty: "Cardiologist", img: Default },
-  { name: "Dr. Priya Sharma", specialty: "Neurologist", img: Default },
-  { name: "Dr. Rohan Desai", specialty: "Orthopedic", img: Default },
+  { name: "Dr. Shreyas Kulkarni", specialty: "Cardiologist", img: Default },
+  { name: "Dr. Chaitali Kulkarni", specialty: "Neurologist", img: Default },
+  { name: "Dr. Priyanka Jorvekar", specialty: "Orthopedic", img: Default },
 ];
 
 const OurDoctors = () => {

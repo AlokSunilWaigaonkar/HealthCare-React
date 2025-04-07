@@ -1,0 +1,80 @@
+.patient-records-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #fdfdfd;
+    border-radius: 10px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 👤 Patient info outside the card */
+  .patient-details {
+    background-color: #ffffff;
+    padding: 1rem 1.5rem;
+    border-left: 4px solid #007bff;
+    border-radius: 6px;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.1);
+  }
+  
+  .patient-details h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .patient-details p {
+    margin: 4px 0;
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  /* 📋 Medical record card */
+  .record-card {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .record-card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  }
+  
+  .record-info p {
+    font-size: 1rem;
+    color: #444;
+    margin-bottom: 0.5rem;
+  }
+  
+  .record-info strong {
+    color: #222;
+  }
+  
+  /* 📈 ECG Graph */
+  .ecg-graph {
+    margin-top: 1.5rem;
+  }
+  
+  .ecg-graph h4 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  /* Back button (optional reuse) */
+  .patient-records-container button {
+    margin-top: 1rem;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .patient-records-container button:hover {
+    background-color: #0056b3;
+  }

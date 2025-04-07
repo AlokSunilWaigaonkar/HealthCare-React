@@ -10,10 +10,8 @@ export default function Navbar() {
   const [text, setText] = useState("");
   const [searchResults, setSearchResults] = useState([]); // Store search results
   const [submittedResults, setSubmittedResults] = useState([]); // Store results after submit
-  //clearing history after logging out
-  useEffect(() => {
-    window.history.replaceState(null, null, "/");
-  }, []);
+
+  
 
   // Handle input change & dynamic search
   const handleInputChange = (event) => {
@@ -74,23 +72,25 @@ export default function Navbar() {
       </nav>
 
       {/* Display search results */}
-      <div className="search-results">
-        {searchResults.length > 0 ? (
-          searchResults.map((patient,index) => (
-            <PatientCard
-              key={index}
-              name={patient.name}
-              contact={patient.contact}
-              email={patient.email}
-              gender={patient.gender}
-            />
-          ))
-        ) : text ? (
-          <div className="mt-5 mx-5" style={{color:"#5f6466"}}>
-            <p>No Patient Found</p>
-          </div>
-        ) : null}
+      {text.trim() !== "" && (
+  <div className="search-results">
+    {searchResults.length > 0 ? (
+      searchResults.map((patient, index) => (
+        <PatientCard
+          key={index}
+          name={patient.name}
+          contact={patient.contact}
+          email={patient.email}
+          gender={patient.gender}
+        />
+      ))
+    ) : (
+      <div className="mt-5 mx-5" style={{ color: "#5f6466" }}>
+        <p>No Patient Found</p>
       </div>
+    )}
+  </div>
+)}
     </div>
   );
 }

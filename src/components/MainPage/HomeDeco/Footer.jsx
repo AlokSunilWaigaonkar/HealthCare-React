@@ -8,7 +8,7 @@ const Footer = () => {
           <h3 className="footer-title">SCP Group of Hospitals</h3>
           <p className="footer-text">Empowering Healthcare with Technology</p>
           <p className="footer-text">📍 Pune, India</p>
-          <p className="footer-text">📞 +91 98765 43210</p>
+          <p className="footer-text">📞 +91 93732 98948</p>
           <p className="footer-text">✉️ support@scphealth.com</p>
         </div>
         <div className="footer-links">
