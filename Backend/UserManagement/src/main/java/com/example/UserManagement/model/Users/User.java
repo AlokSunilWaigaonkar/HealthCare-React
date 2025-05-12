@@ -27,7 +27,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String contactNo;
-    private AddressRequest address;
+    private String address;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id")

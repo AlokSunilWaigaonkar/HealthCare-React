@@ -6,7 +6,9 @@ import lombok.Data;
 public class DoctorRegisterRequest {
     private String firstName;
     private String lastName;
+    private String email;
     private String specialization;
     private String licenseNumber;
+
 }
 

@@ -1,5 +1,6 @@
 package com.example.UserManagement.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,22 +26,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String header = request.getHeader("Authorization");
+        System.out.println("Authorization Header: {}"+ header);
         String token = null;
         String username = null;
-        if (header!=null && header.startsWith("Bearer ")){
+        System.out.println("Incoming request to: {}"+request.getRequestURI());
+        System.out.println("Authorization Header: {}"+ header);
+
+        if (header != null && header.startsWith("Bearer ")) {
             token = header.substring(7);
-            username = jwtTokenUtil.getUsernameFromToken(token);
+            System.out.println("Extracted Token: {}"+ token);
+            try {
+                username = jwtTokenUtil.getUsernameFromToken(token);
+            } catch (JwtException | IllegalArgumentException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                System.out.println("Token validation failed: {}"+ e.getMessage());
+                response.getWriter().write("Invalid or expired JWT token");
+                return;
+            }
         }
 
-        if (username!=null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtTokenUtil.validateToken(token)){
+        UserDetails userDetails = null;
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            userDetails = userDetailsService.loadUserByUsername(username);
+            if (jwtTokenUtil.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
-        filterChain.doFilter(request,response);
+
+
+        filterChain.doFilter(request, response);
     }
 }

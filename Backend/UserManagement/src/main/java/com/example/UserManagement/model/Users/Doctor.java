@@ -20,7 +20,12 @@ public class Doctor {
     private String lastName;
     private String specialization;
     private String licenseNumber;
+    private String email;
+    private String systemEmail; // System-generated email
+    private String systemPassword; // Hashed password
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> patients; // One doctor can have many patients
+
+
 }
