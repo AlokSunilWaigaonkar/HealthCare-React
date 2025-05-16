@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import axios from "axios";
+import axios from "axios";
 import "../../css/login.css";
 import Navbar from "../MainPage/Navbar";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState("");
+  const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [errorClass, setErrorClass] = useState("");
@@ -14,14 +14,14 @@ export default function Login() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    if (name === "username") setUserName(value);
+    if (name === "email") setemail(value);
     if (name === "password") setPassword(value);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (userName === "" || password === "") {
+    if (email === "" || password === "") {
       setMessage("⚠️ Please fill all the fields");
       setErrorClass("error-box shake");
       setTimeout(() => setErrorClass("error-box"), 500);
@@ -29,33 +29,37 @@ export default function Login() {
     }
 
     // Dummy login logic
-    if (userName.startsWith("doc") && password === "doc@123") {
-      setIsLoggedIn(true);
-      setMessage("");
-      setTimeout(() => navigate("/doctorDashboard"), 2000);
-    } else if (userName.startsWith("pat") && password === "pat@123") {
-      setIsLoggedIn(true);
-      setMessage("");
-      setTimeout(() => navigate("/patientDashboard"), 2000);
-    } else {
-      setMessage("Invalid credentials. Try docxxx/doc@123 or patxxx/pat@123");
-      setErrorClass("error-box shake");
-      setTimeout(() => setErrorClass("error-box"), 500);
-    }
+    // if (email.startsWith("doc") && password === "doc@123") {
+    //   setIsLoggedIn(true);
+    //   setMessage("");
+    //   setTimeout(() => navigate("/doctorDashboard"), 2000);
+    // } else if (email.startsWith("pat") && password === "pat@123") {
+    //   setIsLoggedIn(true);
+    //   setMessage("");
+    //   setTimeout(() => navigate("/patientDashboard"), 2000);
+    // } else {
+    //   setMessage("Invalid credentials. Try docxxx/doc@123 or patxxx/pat@123");
+    //   setErrorClass("error-box shake");
+    //   setTimeout(() => setErrorClass("error-box"), 500);
+    // }
 
-    /* 
+    
     // Uncomment this for backend integration
     try {
-      const response = await axios.post("http://localhost:8080/api/login", {
-        username: userName,
+      const response = await axios.post("http://localhost:8080/auth/login", {
+        email: email,
         password: password,
       });
 
-      const { role } = response.data;
+      const { token, refreshToken, role } = response.data.data;
+      console.log(token)
+      console.log(refreshToken)
+      console.log(role)
+      
 
-      if (role === "doctor") {
+      if (role === "DOCTOR") {
         navigate("/doctorDashboard");
-      } else if (role === "patient") {
+      } else if (role === "PATIENT") {
         navigate("/patientDashboard");
       } else {
         setMessage("Unauthorized Role");
@@ -63,7 +67,7 @@ export default function Login() {
     } catch (error) {
       setMessage("Invalid credentials");
     }
-    */
+    
   };
 
   return (
@@ -84,7 +88,7 @@ export default function Login() {
                 <form className="login-form" onSubmit={handleSubmit}>
                   <input
                     type="text"
-                    name="username"
+                    name="email"
                     placeholder="Enter User ID"
                     className="input-sec"
                     style={{ borderRadius: "5px" }}

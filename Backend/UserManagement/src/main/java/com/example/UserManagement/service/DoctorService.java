@@ -1,84 +1,237 @@
 package com.example.UserManagement.service;
 
+import com.example.UserManagement.config.JwtTokenUtil;
+import com.example.UserManagement.model.AdditionalModel.Appointment;
+import com.example.UserManagement.model.AuthResponse;
+import com.example.UserManagement.model.Enums.AppointmentStatus;
+import com.example.UserManagement.model.Enums.Role;
 import com.example.UserManagement.model.Users.Doctor;
+import com.example.UserManagement.model.Users.Patient;
+import com.example.UserManagement.repo.AppointmentRepository;
 import com.example.UserManagement.repo.DoctorRepo;
-import com.example.UserManagement.request.DoctorRegisterRequest;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import com.example.UserManagement.repo.PatientRepo;
+import com.example.UserManagement.repo.UserRepo;
+import com.example.UserManagement.request.AppointmentRequest;
+import com.example.UserManagement.request.DoctorUpdateRequest;
+import com.example.UserManagement.response.AppointmentResponseDTO;
+import com.example.UserManagement.response.PatientResponseDTO;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
-import java.util.UUID;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class DoctorService {
 
     private final DoctorRepo doctorRepo;
-    private final JavaMailSender mailSender;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final UserRepo userRepo;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final PatientRepo patientRepo;
+    private final AppointmentRepository appointmentRepository;
 
-    public Doctor registerDoctor(DoctorRegisterRequest request) {
-        // Validate the request
-        if (request.getFirstName() == null || request.getLastName() == null || request.getEmail() == null) {
-            throw new IllegalArgumentException("First name, last name, and email are required");
+    public AuthResponse login(String systemEmail , String systemPassword){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(systemEmail,systemPassword)
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtTokenUtil.generateToken(systemEmail);
+        String refreshToken = jwtTokenUtil.generateRefreshToken(systemEmail);
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setToken(token);
+        authResponse.setRefreshToken(refreshToken);
+
+        authResponse.setRole(Role.valueOf(authentication.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("PATIENT")));
+
+        return authResponse;
+
+    }
+
+    public List<PatientResponseDTO> getAllPatientsOfDoctor(Long doctorId) {
+        Doctor doctor = doctorRepo.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+        return doctor.getPatients().stream().map(patient -> {
+                    PatientResponseDTO.DoctorBasicInfo doctorInfo = new PatientResponseDTO.DoctorBasicInfo(
+                            doctor.getId(), doctor.getFirstName(), doctor.getSpecialization()
+                    );
+
+                    return new PatientResponseDTO(
+                            patient.getId(),
+                            patient.getEmail(),
+                            patient.getFirstName(),
+                            patient.getLastName(),
+                            patient.getAge(),
+                            patient.getGender(),
+                            patient.getDateOfBirth(),
+                            patient.getAddress(),
+                            patient.getBloodGroup(),
+                            patient.getEmergencyContact(),
+                            patient.getContactNo(),
+                            patient.getMedicalHistory(),
+                            List.of(doctorInfo)
+                    );
+                }).collect(Collectors.toList())
+                .reversed();
+    }
+
+    public PatientResponseDTO getPatientData (Long doctorId ,  Long patientId){
+        Doctor doctor = doctorRepo.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+        Optional<Patient> patient = doctor.getPatients().stream()
+                .filter(p -> p.getId().equals(patientId))
+                .findFirst();
+
+        Patient p = patient.orElseThrow(() -> new RuntimeException("Patient not found or not associated with this doctor"));
+
+        PatientResponseDTO.DoctorBasicInfo doctorInfo = new PatientResponseDTO.DoctorBasicInfo(
+                doctor.getId(),doctor.getFirstName(), doctor.getSpecialization());
+
+        return new PatientResponseDTO(
+                p.getId(),
+                p.getEmail(),
+                p.getFirstName(),
+                p.getLastName(),
+                p.getAge(),
+                p.getGender(),
+                p.getDateOfBirth(),
+                p.getAddress(),
+                p.getBloodGroup(),
+                p.getEmergencyContact(),
+                p.getContactNo(),
+                p.getMedicalHistory(),
+                List.of(doctorInfo)
+        );
+
+    }
+
+    public AppointmentResponseDTO bookAppointment(Long doctorId , Long patientId , AppointmentRequest request){
+        Doctor doctor = doctorRepo.findById(doctorId).orElseThrow(() -> new RuntimeException("Something went wrong"));
+        Patient patient = patientRepo.findById(patientId).orElseThrow(() -> new RuntimeException("Something went wrong"));
+
+        if (!doctor.getPatients().contains(patient)) {
+            throw new RuntimeException("Patient is not associated with this doctor");
         }
 
-        // Create doctor entity
-        Doctor doctor = new Doctor();
+        Appointment appointment = new Appointment();
+        appointment.setDoctor(doctor);
+        appointment.setPatient(patient);
+        appointment.setAppointmentDate(request.getAppointmentDate());
+        appointment.setReason(request.getReason());
+        appointment.setStatus(AppointmentStatus.CONFIRMED);
+
+        appointment = appointmentRepository.save(appointment);
+
+        // Map to DTO before returning
+        AppointmentResponseDTO.DoctorInfo doctorInfo = new AppointmentResponseDTO.DoctorInfo(
+                doctor.getId(),
+                doctor.getFirstName(),
+                doctor.getLastName(),
+                doctor.getSpecialization()
+        );
+
+        AppointmentResponseDTO.PatientInfo patientInfo = new AppointmentResponseDTO.PatientInfo(
+                patient.getId(),
+                patient.getFirstName(),
+                patient.getLastName(),
+                patient.getAge(),
+                patient.getGender()
+        );
+
+        return new AppointmentResponseDTO(
+                appointment.getId(),
+                appointment.getAppointmentDate(),
+                appointment.getReason(),
+                appointment.getStatus(),
+                doctorInfo,
+                patientInfo
+        );
+    }
+
+    public List<AppointmentResponseDTO> getAppointmentsForDoctor(Long doctorId) {
+        Doctor doctor = doctorRepo.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+        List<Appointment> appointments = appointmentRepository.findByDoctor(doctor);
+
+        return appointments.stream().map(appointment -> {
+            Doctor doc = appointment.getDoctor();
+            Patient pat = appointment.getPatient();
+
+            AppointmentResponseDTO.DoctorInfo doctorInfo = new AppointmentResponseDTO.DoctorInfo(
+                    doc.getId(),
+                    doc.getFirstName(),
+                    doc.getLastName(),
+                    doc.getSpecialization()
+            );
+
+            AppointmentResponseDTO.PatientInfo patientInfo = new AppointmentResponseDTO.PatientInfo(
+                    pat.getId(),
+                    pat.getFirstName(),
+                    pat.getLastName(),
+                    pat.getAge(),
+                    pat.getGender()
+            );
+
+            return new AppointmentResponseDTO(
+                    appointment.getId(),
+                    appointment.getAppointmentDate(),
+                    appointment.getReason(),
+                    appointment.getStatus() != null ? appointment.getStatus() : null,
+                    doctorInfo,
+                    patientInfo
+            );
+        }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void updateAppointmentStatus(Long appointmentId, AppointmentStatus status) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        appointment.setStatus(status);
+        appointmentRepository.save(appointment);
+    }
+    public void updateDoctorProfile(Long doctorId, DoctorUpdateRequest request) {
+        Doctor doctor = doctorRepo.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
         doctor.setFirstName(request.getFirstName());
         doctor.setLastName(request.getLastName());
-        doctor.setEmail(request.getEmail());
         doctor.setSpecialization(request.getSpecialization());
-        doctor.setLicenseNumber(request.getLicenseNumber());
+        doctor.setPhoneNumber(request.getPhoneNumber());
+        doctor.setQualification(request.getQualification());
+        doctor.setAvailabilityHours(request.getAvailabilityHours());
 
-        // Generate system credentials for doctor login
-        String systemGeneratedEmail = request.getFirstName().toLowerCase() + "." + request.getLastName().toLowerCase() + "@hospital.com";
-        String systemGeneratedPassword = UUID.randomUUID().toString().substring(0, 8);
-        String hashedPassword = passwordEncoder.encode(systemGeneratedPassword); // Secure password hashing
-
-        // Update doctor entity with system-generated email and hashed password
-        doctor.setSystemEmail(systemGeneratedEmail);
-        doctor.setSystemPassword(hashedPassword);
-
-        // Save doctor entity
-        Doctor savedDoctor = doctorRepo.save(doctor);
-
-        // Send the credentials to the doctor's email
-        try {
-            sendDoctorCredentialsEmail(doctor.getEmail(), systemGeneratedEmail, systemGeneratedPassword);
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new RuntimeException("Failed to send credentials email to doctor", e);
-        }
-
-        return savedDoctor;
+        doctorRepo.save(doctor);
+    }
+    public Doctor getDoctorById(Long doctorId) {
+        return doctorRepo.findById(doctorId).orElseThrow(() -> new RuntimeException("Doctor not found"));
     }
 
-    private void sendDoctorCredentialsEmail(String doctorEmail, String systemEmail, String password)
-            throws MessagingException, UnsupportedEncodingException {
-        String subject = "Your System-Generated Login Credentials";
-        String senderName = "Hospital Management System";
-        String mailContent = "<p>Dear Doctor,</p>"
-                + "<p>Your account has been created successfully in our Hospital Management System. Below are your login credentials:</p>"
-                + "<p><strong>Email:</strong> " + systemEmail + "</p>"
-                + "<p><strong>Password:</strong> " + password + "</p>"
-                + "<p>Please log in to your account and change your password immediately for security purposes.</p>"
-                + "<p>Thank you,<br>Hospital Management System</p>";
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        helper.setFrom("shadowforgelab@gmail.com", senderName);
-        helper.setTo(doctorEmail);
-        helper.setSubject(subject);
-        helper.setText(mailContent, true); // Enable HTML content
-
-        mailSender.send(message);
+    public void setAvailability(Long doctorId, String availabilityHours) {
+        Doctor doctor = doctorRepo.findById(doctorId).orElseThrow(() -> new RuntimeException("Doctor not found"));
+        doctor.setAvailabilityHours(availabilityHours);
+        doctorRepo.save(doctor);
     }
+
+    public String getAvailability(Long doctorId) {
+        return doctorRepo.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"))
+                .getAvailabilityHours();
+    }
+
 }

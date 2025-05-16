@@ -2,9 +2,8 @@ package com.example.UserManagement.service;
 
 
 import com.example.UserManagement.model.AuthResponse;
-import com.example.UserManagement.model.Role;
-import com.example.UserManagement.model.Users.User;
-import com.example.UserManagement.security.JwtTokenUtil;
+import com.example.UserManagement.model.Enums.Role;
+import com.example.UserManagement.config.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,15 +28,17 @@ public class LoginService {
         // Set the authentication in the security context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = jwtTokenUtil.generateToken(email);
+        String accessToken = jwtTokenUtil.generateToken(email);
+        String refreshToken = jwtTokenUtil.generateRefreshToken(email);
 
         AuthResponse authResponse = new AuthResponse();
-        authResponse.setToken(token);
+        authResponse.setToken(accessToken);
+        authResponse.setRefreshToken(refreshToken);
 
         authResponse.setRole(Role.valueOf(authentication.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
-                .orElse("USER")));
+                .orElse("PATIENT")));
 
         return authResponse;
     }

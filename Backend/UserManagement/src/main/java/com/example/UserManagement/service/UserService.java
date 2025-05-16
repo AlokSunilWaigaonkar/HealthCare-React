@@ -1,27 +1,23 @@
 package com.example.UserManagement.service;
 
 import com.example.UserManagement.exception.UserAlreadyExistsException;
-import com.example.UserManagement.model.Role;
-import com.example.UserManagement.model.Users.Doctor;
+import com.example.UserManagement.model.Enums.Role;
 import com.example.UserManagement.model.Users.User;
 import com.example.UserManagement.model.VerificationToken;
 import com.example.UserManagement.repo.DoctorRepo;
 import com.example.UserManagement.repo.UserRepo;
 import com.example.UserManagement.repo.VerificationTokenRepo;
-
 import com.example.UserManagement.request.RegisterRequest;
-
+import com.example.UserManagement.response.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.javamail.JavaMailSender;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +31,17 @@ public class UserService implements IUserService{
 
 
     @Override
-    public List<User> getUsers() {
-        return userRepo.findAll();
+    public List<UserResponseDTO> getUsers() {
+        List<User> users = userRepo.findAll();
+        return users.stream()
+                .map(user -> new UserResponseDTO(
+                        user.getId(),
+                        user.getEmail(),
+                        user.isEnabled(),
+                        user.getRole(),
+                        user.getStatus()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -48,14 +53,13 @@ public class UserService implements IUserService{
         }
         User newUser = new User();
         newUser.setEmail(request.getEmail());
-        newUser.setRole(Role.valueOf(request.getRole()));
+        String role = request.getRole();
+        Role userRole = (role != null && !role.isEmpty()) ? Role.valueOf(role) : Role.PATIENT;
+        newUser.setRole(userRole);
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        newUser.setFirstName(request.getFirstName());
-        newUser.setLastName(request.getLastName());
-        newUser.setContactNo(request.getContactNo());
-        newUser.setAddress(request.getAddress());
         return userRepo.save(newUser);
     }
+
 
     @Override
     public Optional<User> findByEmail(String email) {
@@ -82,10 +86,19 @@ public class UserService implements IUserService{
     @Override
     public VerificationToken generateNewVerificationToken(String oldToken) {
         VerificationToken verificationToken = verificationTokenRepo.findByToken(oldToken);
-        VerificationToken tokenExpirationTime = new VerificationToken();
 
+        if (verificationToken == null) {
+            throw new IllegalArgumentException("Invalid verification token");
+        }
+
+        // Generate a new token string
         verificationToken.setToken(UUID.randomUUID().toString());
-        verificationToken.setExpirationTime(tokenExpirationTime.getExpirationTime());
+
+        // Set new expiration time (e.g., 10 minutes from now)
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, 10);
+        verificationToken.setExpirationTime(calendar.getTime());
+
         return verificationTokenRepo.save(verificationToken);
     }
 
