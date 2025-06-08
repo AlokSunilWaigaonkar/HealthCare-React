@@ -53,7 +53,7 @@ public class AdminService {
         // Step 2: Create a new user in PENDING state
         Admin newAdmin = new Admin();
         newAdmin.setEmail(request.getEmail());
-        newAdmin.setPassword(""); // Password will be set later
+        newAdmin.setPassword(passwordEncoder.encode(request.getPassword())); // Password will be set later
         newAdmin.setRole(Role.ADMIN);
         newAdmin.setAccessLevel(request.getAccessLevel());
         newAdmin.setStatus(Status.PENDING);// Set status to PENDING
