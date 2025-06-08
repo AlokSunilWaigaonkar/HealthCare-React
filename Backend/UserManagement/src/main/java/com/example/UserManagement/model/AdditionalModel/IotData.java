@@ -1,7 +1,6 @@
 package com.example.UserManagement.model.AdditionalModel;
 
 import com.example.UserManagement.model.Users.Patient;
-import com.example.UserManagement.model.Users.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,6 +22,5 @@ public class IotData {
     private String field3; // Body Temp
     private String field4; // SpO2
     private String field5; // ECG
-
     private LocalDateTime createdAt; // Timestamp for the data entry
 }

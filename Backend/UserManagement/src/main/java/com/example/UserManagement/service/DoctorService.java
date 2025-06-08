@@ -40,32 +40,45 @@ public class DoctorService {
     private final AppointmentRepository appointmentRepository;
 
     public AuthResponse login(String systemEmail , String systemPassword){
+        // Step 1: Authenticate credentials
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(systemEmail,systemPassword)
+                new UsernamePasswordAuthenticationToken(systemEmail, systemPassword)
         );
+
+        // Step 2: Set authentication context
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Step 3: Generate tokens
         String token = jwtTokenUtil.generateToken(systemEmail);
         String refreshToken = jwtTokenUtil.generateRefreshToken(systemEmail);
-        AuthResponse authResponse = new AuthResponse();
-        authResponse.setToken(token);
-        authResponse.setRefreshToken(refreshToken);
 
-        authResponse.setRole(Role.valueOf(authentication.getAuthorities().stream()
+        // Step 4: Fetch Doctor or throw exception
+        Doctor doctor = doctorRepo.findBySystemEmail(systemEmail)
+                .orElseThrow(() -> new RuntimeException("Doctor not found with email: " + systemEmail));
+
+        // Step 5: Build AuthResponse
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setAccessToken(token);         // ✅ Access token
+        authResponse.setRefreshToken(refreshToken); // ✅ Refresh token
+        authResponse.setUserId(doctor.getId());     // ✅ Doctor ID
+
+        // Step 6: Set role from granted authorities (usually 'DOCTOR')
+        String authority = authentication.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
-                .orElse("PATIENT")));
+                .orElse("PATIENT"); // Fallback if not found
+
+        authResponse.setRole(Role.valueOf(authority));
 
         return authResponse;
-
     }
-
     public List<PatientResponseDTO> getAllPatientsOfDoctor(Long doctorId) {
         Doctor doctor = doctorRepo.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
         return doctor.getPatients().stream().map(patient -> {
                     PatientResponseDTO.DoctorBasicInfo doctorInfo = new PatientResponseDTO.DoctorBasicInfo(
-                            doctor.getId(), doctor.getFirstName(), doctor.getSpecialization()
+                            doctor.getId(), doctor.getFirstName(), doctor.getLastName(), doctor.getSpecialization()
                     );
 
                     return new PatientResponseDTO(
@@ -98,7 +111,7 @@ public class DoctorService {
         Patient p = patient.orElseThrow(() -> new RuntimeException("Patient not found or not associated with this doctor"));
 
         PatientResponseDTO.DoctorBasicInfo doctorInfo = new PatientResponseDTO.DoctorBasicInfo(
-                doctor.getId(),doctor.getFirstName(), doctor.getSpecialization());
+                doctor.getId(),doctor.getFirstName(), doctor.getLastName(), doctor.getSpecialization());
 
         return new PatientResponseDTO(
                 p.getId(),
@@ -202,8 +215,14 @@ public class DoctorService {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        appointment.setStatus(status);
-        appointmentRepository.save(appointment);
+        if (status == AppointmentStatus.COMPLETED) {
+            // Delete appointment if status is COMPLETED
+            appointmentRepository.delete(appointment);
+        } else {
+            // Otherwise, just update the status
+            appointment.setStatus(status);
+            appointmentRepository.save(appointment);
+        }
     }
     public void updateDoctorProfile(Long doctorId, DoctorUpdateRequest request) {
         Doctor doctor = doctorRepo.findById(doctorId)
@@ -232,6 +251,10 @@ public class DoctorService {
         return doctorRepo.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"))
                 .getAvailabilityHours();
+    }
+
+    public List<PatientResponseDTO> searchByName(String name){
+        return patientRepo.findByFirstNameContainingOrLastNameContaining(name, name);
     }
 
 }

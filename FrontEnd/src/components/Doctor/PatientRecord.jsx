@@ -1,9 +1,10 @@
 import React from "react";
 import "./PatientRecords.css";
-import Data from "../../data";
 import { motion } from "framer-motion";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 import Navbar from './Navbar';
+import { useState,useEffect } from "react";
+import api from "../../api";
 import {
   LineChart,
   Line,
@@ -14,48 +15,29 @@ import {
   CartesianGrid
 } from "recharts";
 
-const generateSampleECG = () => {
-  const data = [];
-  for (let i = 0; i <= 30; i++) {
-    const y =
-      Math.sin(i * 0.5) * 30 +
-      (Math.random() * 10 - 5) +
-      (i % 10 === 0 ? Math.random() * 50 + 20 : 0);
-    data.push({ x: i, y });
-  }
-  return data;
-};
 
-const PatientRecords = () => {
+
+const PatientRecord = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
-  const selectedName = location.state?.name;
-  const selectedContact = location.state?.contact;
+  const patientData = location.state || {};
+  const [medical_records , setMedicalRecords] = useState({});
 
-  if (!selectedName || !selectedContact) {
-    return (
-      <div className="patient-records-container">
-        <p>No patient selected. Please go back and select a patient.</p>
-        <button onClick={() => navigate(-1)}>Go Back</button>
-      </div>
-    );
-  }
-
-  const selectedPatient = Data.find(
-    (p) => p.name === selectedName && p.contact === selectedContact
-  );
-
-  if (!selectedPatient) {
-    return (
-      <div className="patient-records-container">
-        <p>Patient not found.</p>
-        <button onClick={() => navigate(-1)}>Go Back</button>
-      </div>
-    );
-  }
-
-  const { name, gender, contact, medical_records } = selectedPatient;
+  useEffect(()=>{
+    const fetchRecords = async ()=>{
+      const res = await api.get(`iot-data/patient/${patientData.id}/recent`);
+      setMedicalRecords(res.data)
+    }
+    if(patientData.id){
+      fetchRecords();
+    }
+    
+  },[patientData.id])
+  
+  console.log(medical_records)
+  const recordsArray = Array.isArray(medical_records)
+  ? medical_records
+  : Object.values(medical_records);
 
   return (
     <div>
@@ -64,48 +46,68 @@ const PatientRecords = () => {
 
         {/* 👤 Patient Info outside the card */}
         <div className="patient-details" style={{ marginBottom: "1.5rem" }}>
-          <h2>{name}</h2>
-          <p><strong>Gender:</strong> {gender}</p>
-          <p><strong>Contact:</strong> {contact}</p>
+          <h2>{patientData.name}</h2>
+          <p><strong>Gender:</strong> {patientData.gender}</p>
+          <p><strong>Contact:</strong> {patientData.contact}</p>
         </div>
 
-        {/* 📋 Medical Records and Graph inside the card */}
-        <motion.div
-          className="record-card"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="record-info">
-            <p><strong>ECG:</strong> {medical_records.ECG}</p>
-            <p><strong>Heart Rate:</strong> {medical_records.heart_rate} bpm</p>
-            <p><strong>Body Temp:</strong> {medical_records.body_temperature} °F</p>
-            <p><strong>Room Temp:</strong> {medical_records.room_temperature} °F</p>
-            <p><strong>Oxygen Level:</strong> {medical_records.O2_level}%</p>
-          </div>
+        {recordsArray.map((record, index) => {
+  let ecgData = [];
+  if (record.field5) {
+    ecgData = record.field5.split(',').map((val, i) => ({
+      x: i,
+      y: parseFloat(val)
+    }));
+  }
 
-          <div className="ecg-graph">
-            <h4>ECG Graph</h4>
-            <ResponsiveContainer width="100%" height={150}>
-              <LineChart data={generateSampleECG()}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="x" hide />
-                <YAxis hide domain={['auto', 'auto']} />
-                <Tooltip />
-                <Line
-                  type="monotone"
-                  dataKey="y"
-                  stroke="#8884d8"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
+  return (
+    <motion.div
+      key={index}
+      className="record-card mb-3"
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="record-info">
+        <p><strong>Timestamp:</strong> {record.createdAt ? new Date(record.createdAt).toLocaleString() : 'N/A'}</p>
+        <p><strong>Heart Rate:</strong> {record.heart_rate || 'N/A'} bpm</p>
+        <p><strong>Body Temp:</strong> {record.body_temperature || record.field1 || 'N/A'} °F</p>
+        <p><strong>Room Temp:</strong> {record.room_temperature || record.field2 || 'N/A'} °F</p>
+        <p><strong>Oxygen Level:</strong> {record.O2_level || record.field3 || 'N/A'}%</p>
+      </div>
+
+      {ecgData.length > 0 && (
+        <div className="ecg-graph">
+          <h4>ECG (Electrocardiogram) Graph</h4>
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={ecgData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="x"
+                label={{ value: 'Time (ms)', position: 'insideBottomRight', offset: -5 }}
+              />
+              <YAxis
+                label={{ value: 'Voltage (mV)', angle: -90, position: 'insideLeft' }}
+                domain={['auto', 'auto']}
+              />
+              <Tooltip formatter={(value) => `${value} mV`} />
+              <Line
+                type="monotone"
+                dataKey="y"
+                stroke="#ff4c4c"
+                strokeWidth={2}
+                dot={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+    </motion.div>
+  );
+})}
       </div>
     </div>
   );
 };
 
-export default PatientRecords;
+export default PatientRecord;

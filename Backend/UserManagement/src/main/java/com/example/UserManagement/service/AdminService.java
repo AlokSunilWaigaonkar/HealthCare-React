@@ -8,10 +8,7 @@ import com.example.UserManagement.model.Users.Admin;
 import com.example.UserManagement.model.Users.Doctor;
 import com.example.UserManagement.model.Users.Patient;
 import com.example.UserManagement.model.Users.User;
-import com.example.UserManagement.repo.AppointmentRepository;
-import com.example.UserManagement.repo.DoctorRepo;
-import com.example.UserManagement.repo.PatientRepo;
-import com.example.UserManagement.repo.UserRepo;
+import com.example.UserManagement.repo.*;
 import com.example.UserManagement.request.AddAdminRequest;
 import com.example.UserManagement.request.AdminStatsDTO;
 import com.example.UserManagement.request.DoctorRegisterRequest;
@@ -45,6 +42,7 @@ public class AdminService {
     private final UserRepo userRepo;
     private final PatientRepo patientRepo;
     private final AppointmentRepository appointmentRepository;
+    private final IotRepo iotRepo;
 
     public void requestAdmin(AddAdminRequest request) {
         // Step 1: Check if the email already exists
@@ -200,7 +198,7 @@ public class AdminService {
         return patientRepo.findAll().stream().map(patient -> {
             List<Doctor> doctors = patient.getDoctors(); // renamed variable for clarity
             List<PatientResponseDTO.DoctorBasicInfo> doctorInfoList = doctors.stream()
-                    .map(doc -> new PatientResponseDTO.DoctorBasicInfo(doc.getId(),doc.getFirstName(), doc.getSpecialization()))
+                    .map(doc -> new PatientResponseDTO.DoctorBasicInfo(doc.getId(),doc.getFirstName(),doc.getLastName(), doc.getSpecialization()))
                     .toList();
 
             return new PatientResponseDTO(
@@ -262,9 +260,6 @@ public class AdminService {
 
         // Option 1: Delete permanently
          doctorRepo.delete(doctor);
-
-
-        doctorRepo.save(doctor);
     }
 
     public AdminStatsDTO getAdminStats() {
@@ -284,17 +279,21 @@ public class AdminService {
 
     @Transactional
     public ApiResponseDTO<Void> deletePatientAndUser(Long patientId) {
-        // Check if patient exists
+        // Fetch the patient or throw exception if not found
         Patient patient = patientRepo.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient with ID " + patientId + " not found"));
 
-        // Delete all appointments related to the patient
+        patientRepo.deleteDoctorPatientLinksByPatientId(patientId);
+
+        // ✅ Delete all appointments related to the patient
         appointmentRepository.deleteAllByPatientId(patientId);
 
-        // Delete the patient entry (orphanRemoval will remove child entities if mapped)
+        iotRepo.deleteAllByPatientId(patientId);
+
+        // ✅ Now safe to delete patient
         patientRepo.deleteById(patientId);
 
-        // Delete from user table (assuming user ID = patient ID)
+        // ✅ Finally delete user (assuming same ID is used)
         userRepo.deleteById(patientId);
 
         return new ApiResponseDTO<>("Patient and associated user deleted successfully.", true, null);

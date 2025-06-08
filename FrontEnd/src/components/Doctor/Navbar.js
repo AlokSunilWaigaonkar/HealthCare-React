@@ -1,55 +1,74 @@
-import React, { useState,useEffect } from "react";
-import "../../css/navbar.css";
-import Logo from "../../images/logo.png";
-import Data from "../../data"; // Importing the patient data
+import React, { useEffect, useState } from "react";
+// import "../../css/navbar.css";
+import Logo from "../../images/logo.png"; // Importing the patient data
 import PatientCard from "./PatientCard";
 import { useNavigate } from "react-router-dom";
+import api from "../../api";
 
 export default function Navbar() {
   const navigate=useNavigate();
   const [text, setText] = useState("");
   const [searchResults, setSearchResults] = useState([]); // Store search results
-  const [submittedResults, setSubmittedResults] = useState([]); // Store results after submit
+  const [Data,setData] = useState({}); // store fetched patients
+  let doctorId = localStorage.getItem("id");
 
-  
+  useEffect(()=>{
+    const fetchPatients = async () => {
+      try {
+        const res = await api.get(`/doctor/${doctorId}/patients`);
+        setData(res.data.data);
+      } catch (error) {
+        console.error("Failed to fetch patients:", error);
+        setData([]);
+      }
+    };
+
+    if (doctorId) {
+      fetchPatients();
+    }
+  },[doctorId])
+
+  const handleAppointmentClick = ()=>{
+    navigate("/appointments")
+}  
 
   // Handle input change & dynamic search
   const handleInputChange = (event) => {
     const searchQuery = event.target.value;
     setText(searchQuery);
-
+  
     if (searchQuery.trim() === "") {
-      setSearchResults([]); // Clear results when input is empty
+      setSearchResults([]);
       return;
     }
-
-    const filteredResults = Data.filter((patient) =>
-      patient.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
+  
+    
+  const filteredResults = Data.filter((patient) => {
+    const fullName = `${patient.firstName} ${patient.lastName}`.toLowerCase();
+    return fullName.includes(searchQuery.toLowerCase());
+  });
+  
     setSearchResults(filteredResults);
   };
 
   //handle log out
-  const handelLogOut=()=>{
-    navigate("/")
-  }
-
-  // Handle form submission
-  const handleOnSubmit = (event) => {
-    event.preventDefault(); // Prevent page reload
-
-    if (text.trim() === "") {
-      setSubmittedResults([]); // Clear results if input is empty
-      return;
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout', {
+        refreshToken: localStorage.getItem("refreshToken")
+      });
+      console.log("loggin out" )
+    } catch (error) {
+      console.log("log out failed doing local logout")
+      console.error("Logout failed", error);
     }
-
-    const filteredResults = Data.filter((patient) =>
-      patient.name.toLowerCase().includes(text.toLowerCase())
-    );
-
-    setSubmittedResults(filteredResults); // Store submitted search results
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate("/login", { replace: true });
   };
+
+
+ 
   return (
     <div>
       <nav className="navbar">
@@ -57,7 +76,7 @@ export default function Navbar() {
           <img src={Logo} alt="Logo" style={{ width: "80px" }} />
         </a>
 
-        <form role="search" onSubmit={handleOnSubmit}>
+        <form role="search" >
           <input
             className="input-section"
             type="search"
@@ -66,20 +85,23 @@ export default function Navbar() {
             value={text}
             onChange={handleInputChange}
           />
-          <button type="submit" className="btn nav-btn btn-outline-success m-4">Submit</button>
+          <button type="submit" className="btn nav-btn btn-outline-success m-4">Search</button>
         </form>
-        <button className="nav-btn btn btn-outline-success" onClick={handelLogOut} >Log out</button>
+        <div>
+          <button className="nav-btn btn  btn-outline-success" onClick={handleAppointmentClick} >Appointments</button>
+          <button className="nav-btn btn btn-outline-success" onClick={handleLogout} >Log out</button>
+        </div>
       </nav>
 
-      {/* Display search results */}
+
       {text.trim() !== "" && (
   <div className="search-results">
     {searchResults.length > 0 ? (
       searchResults.map((patient, index) => (
         <PatientCard
           key={index}
-          name={patient.name}
-          contact={patient.contact}
+          name={patient.firstName+" "+patient.lastName}
+          contact={patient.contactNo}
           email={patient.email}
           gender={patient.gender}
         />

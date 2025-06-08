@@ -3,14 +3,17 @@ import { useNavigate } from "react-router-dom";
 import "../../css/PatientCard.css";
 import defaultImage from "../../images/defaultImage.png";
 
-export default function PatientCard({ name, contact, email, gender }) {
+export default function PatientCard({ name,id, contact, email, gender }) {
   const navigate = useNavigate();
 
   const handleRecordButton = () => {
-    navigate("/patientrecord", {
+    navigate("/patientRecord", {
       state: {
         name,
-        contact
+        contact,
+        gender,
+        email,
+        id
       }
     });
   };;

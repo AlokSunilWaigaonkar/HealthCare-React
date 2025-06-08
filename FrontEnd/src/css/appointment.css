@@ -1,0 +1,125 @@
+/* Base Styles */
+body {
+    background-color: #f5f8ff;
+    font-family: 'Segoe UI', sans-serif;
+    color: #1e2a38;
+  }
+  
+  /* Card Container */
+  .card {
+    background-color: white;
+    border-radius: 1.5rem; /* 2xl */
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Card Header Flex */
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Doctor Name */
+  .card-header .name {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  /* Specialization */
+  .card-header .specialization {
+    font-size: 0.95rem;
+    color: #667788;
+  }
+  
+  /* Book Button */
+  .card-header button {
+    background-color: #005c99;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  .card-header button:hover {
+    background-color: #004d80;
+  }
+  
+  .form-section {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 500px;
+    transition: all 0.3s ease;
+  }
+  
+  .form-section label {
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .form-section input,
+  .form-section textarea {
+    margin-top: 8px;
+    padding: 12px 16px;
+    border: 1px solid #dcdcdc;
+    border-radius: 12px;
+    font-size: 14px;
+    transition: border 0.2s ease;
+    outline: none;
+  }
+  
+  .form-section input:focus,
+  .form-section textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+  
+  .confirm-btn {
+    background-color: #0077a6; 
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 15px;
+  }
+  
+  .confirm-btn:hover {
+    background-color: #005f88;
+  }
+  
+  .confirm-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .loader {
+    width: 18px;
+    height: 18px;
+    border: 3px solid #fff;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  

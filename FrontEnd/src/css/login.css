@@ -89,3 +89,32 @@
     background-color: #005f88;
     cursor: pointer;
   }
+  .error-box {
+    color: red;
+    background-color: #ffe6e6;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .success-box {
+    color: green;
+    background-color: #e6ffe6;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .shake {
+    animation: shake 0.3s;
+  }
+  
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }

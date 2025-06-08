@@ -15,9 +15,8 @@ import java.util.Date;
 public class JwtTokenUtil {
     @Value("${JWT_SECRET}")
     private String SECRET_KEY ;
-    private static final long EXPIRATION_TIME_MS = 24 * 60 * 60 * 1000;
     private  Key key;
-    private final long ACCESS_TOKEN_EXPIRATION = 15 * 60 * 1000; // 15 minutes
+    private final long ACCESS_TOKEN_EXPIRATION = 60 * 60 * 1000; // 15 minutes
     private final long REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000; // 7 days
 
     private Key getSigningKey(){
@@ -40,7 +39,22 @@ public class JwtTokenUtil {
         String usernameFromToken = getUsernameFromToken(token);
         return usernameFromToken.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
-    private boolean isTokenExpired(String token) {
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            System.out.println("Token valid for user: " + claims.getSubject());
+            return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            System.out.println("Token validation failed: " + e.getMessage());
+            return false;
+        }
+    }
+    public boolean isTokenExpired(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -50,23 +64,24 @@ public class JwtTokenUtil {
     }
 
     public String getUsernameFromToken(String token){
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return claims.getSubject();
-
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims.getSubject();
+        } catch (Exception e) {
+            return null;
+        }
     }
-
 
 
     public String generateRefreshToken(String userName) {
         return Jwts.builder()
                 .setSubject(userName)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7 days
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

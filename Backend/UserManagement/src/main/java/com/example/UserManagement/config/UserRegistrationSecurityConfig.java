@@ -1,10 +1,11 @@
+
 package com.example.UserManagement.config;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,12 +22,10 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class UserRegistrationSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    public UserRegistrationSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter){
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -43,10 +42,13 @@ public class UserRegistrationSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register/**", "auth/**","doctor/login").permitAll()
+                        .requestMatchers("/register/**", "/auth/login","/doctor/login").permitAll()
+                        .requestMatchers("/iot-data/**").authenticated()
+                        .requestMatchers("/auth/logout").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/patient/**").hasRole("PATIENT")
                         .requestMatchers("/doctor/**").hasRole("DOCTOR")
+                        .requestMatchers("/error").permitAll()
 
                         .anyRequest().authenticated()
                 )

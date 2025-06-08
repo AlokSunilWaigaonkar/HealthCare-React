@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +51,13 @@ public class RegistrationController {
             User user = patientService.registerPatient(registerRequest);
             eventPublisher.publishEvent(new RegistrationCompletionEvent(user, applicationUrl(request)));
             return ResponseEntity.ok(new ApiResponseDTO<>("Success! Please check your email for verification.", true, null));
-        } catch (Exception e) {
+        }
+        catch (DataIntegrityViolationException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(new ApiResponseDTO<>("Email is already registered. Please login or use another email.", false, null));
+        }
+        catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponseDTO<>("Error during registration: " + e.getMessage(), false, null));
         }

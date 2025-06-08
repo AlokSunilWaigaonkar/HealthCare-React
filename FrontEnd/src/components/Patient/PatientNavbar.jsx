@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import Logo from "../../images/logo.png";
 import './DashboardNavbar.css';
+import { useNavigate } from 'react-router-dom';
+import api from '../../api';
 
-const PatientNavbar = () => {
+const PatientNavbar = ({ firstName, lastName }) => {
+  const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const userFullName = 'Shreyas Kulkarni'; // You can fetch from context/token
+  const userFullName = `${firstName} ${lastName}`;
   const initials = userFullName
     .split(' ')
     .map((n) => n[0])
@@ -16,14 +19,25 @@ const PatientNavbar = () => {
     setShowDropdown((prev) => !prev);
   };
 
-  const handleLogout = () => {
-    console.log('Logging out...');
-    // TODO: Clear tokens, redirect to login
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout', {
+        refreshToken: localStorage.getItem("refreshToken")
+      });
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate("/login", { replace: true });
+  };
+  const handleProfileClick = () => {
+    navigate("/patientProfile");
   };
 
   return (
     <div className="navbar">
-        <a href="/"><img className='logo' src={Logo} alt="" /></a>
+      <a href="/"><img className='logo' src={Logo} alt="Logo" /></a>
       <div className="navbar-title">SCP Group of Hospitals</div>
 
       <div style={{ position: 'relative' }}>
@@ -33,7 +47,7 @@ const PatientNavbar = () => {
 
         {showDropdown && (
           <div className="dropdown">
-            <button>Profile</button>
+            <button onClick={handleProfileClick}>Profile</button>
             <button>Settings</button>
             <button onClick={handleLogout}>Logout</button>
           </div>

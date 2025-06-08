@@ -42,9 +42,27 @@ public class PatientService {
         Patient patient = patientRepo.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not Found"));
 
+        /*
+         private String FirstName;
+    private String LastName;
+    private int age;
+    private String gender;
+    private String bloodGroup;
+    private String emergencyContact;
+    private Date DateOfBirth;
+    private String Address;
+    private String ContactNo;
+    private String healthRecords;
+    private String MedicalHistory;
+        */
+
         patient.setFirstName(patientUpdateRequest.getFirstName());
         patient.setLastName(patientUpdateRequest.getLastName());
         patient.setAddress(patientUpdateRequest.getAddress());
+        patient.setAge(patientUpdateRequest.getAge());
+        patient.setBloodGroup(patientUpdateRequest.getBloodGroup());
+        patient.setGender(patientUpdateRequest.getGender());
+        patient.setEmergencyContact(patientUpdateRequest.getEmergencyContact());
         patient.setContactNo(patientUpdateRequest.getContactNo());
         patient.setMedicalHistory(patientUpdateRequest.getMedicalHistory());
         patient.setDateOfBirth(patientUpdateRequest.getDateOfBirth());
@@ -145,6 +163,13 @@ public class PatientService {
 
         patient.setPassword(passwordEncoder.encode(request.getNewPassword()));
         patientRepo.save(patient);
+    }
+    public List<PatientResponseDTO.DoctorBasicInfo> getDoctorsRelatedToPatient(Long patientId){
+        Patient  patient = patientRepo.findById(patientId).orElseThrow(()->new RuntimeException("Patient Not found"));
+        List<Doctor> doctors = patient.getDoctors();
+        return doctors.stream()
+                .map(doc -> new PatientResponseDTO.DoctorBasicInfo(doc.getId(),doc.getFirstName(),doc.getLastName(), doc.getSpecialization()))
+                .toList();
     }
 
 }

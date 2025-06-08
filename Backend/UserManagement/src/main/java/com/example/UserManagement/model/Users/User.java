@@ -2,6 +2,7 @@ package com.example.UserManagement.model.Users;
 
 import com.example.UserManagement.model.Enums.Role;
 import com.example.UserManagement.model.Enums.Status;
+import com.example.UserManagement.model.VerificationToken;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,5 +26,8 @@ public class User {
     private Role role;
     @Enumerated(EnumType.STRING)
     private Status status = Status.PENDING;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private VerificationToken verificationToken;
 
 }

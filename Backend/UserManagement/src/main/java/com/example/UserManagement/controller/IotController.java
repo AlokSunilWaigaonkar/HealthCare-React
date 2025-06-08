@@ -2,6 +2,7 @@ package com.example.UserManagement.controller;
 
 
 import com.example.UserManagement.model.AdditionalModel.IotData;
+import com.example.UserManagement.response.RecordResponse;
 import com.example.UserManagement.service.IotService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,11 @@ import java.util.List;
 @RequestMapping("/iot-data")
 @RequiredArgsConstructor
 public class IotController {
-    private IotService iotService;
+    private final IotService iotService;
 
     @GetMapping("/patient/{patientId}/recent")
     public ResponseEntity<?> getRecentDataForPatient(@PathVariable Long patientId){
-        List<IotData> data = iotService.getRecentDataForPatient(patientId);
+        List<RecordResponse> data = iotService.getRecentDataForPatient(patientId);
         return ResponseEntity.ok(data);
     }
 

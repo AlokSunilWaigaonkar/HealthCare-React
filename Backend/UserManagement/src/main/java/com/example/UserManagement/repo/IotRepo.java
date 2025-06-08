@@ -16,4 +16,8 @@ public interface IotRepo extends JpaRepository<IotData,Long> {
     @Modifying
     @Query("DELETE FROM Appointment a WHERE a.appointmentDate < :cutOfDate")
     void deleteOldEntries(LocalDateTime cutOfDate);
+
+    List<IotData> findTop7ByPatientIdOrderByCreatedAtDesc(Long patientId);
+
+    void deleteAllByPatientId(Long patientId);
 }

@@ -75,7 +75,7 @@ public class DoctorController {
     @PutMapping("/appointments/{appointmentId}/status")
     public ResponseEntity<ApiResponseDTO<Void>> updateAppointmentStatus(
             @PathVariable Long appointmentId,
-            @RequestParam UpdateAppointmentStatusRequest status) {
+            @RequestBody UpdateAppointmentStatusRequest status) {
         try {
             doctorService.updateAppointmentStatus(appointmentId, status.getStatus());
             return ResponseEntity.ok(new ApiResponseDTO<>("Appointment status updated successfully", true, null));
@@ -112,5 +112,10 @@ public class DoctorController {
     public ResponseEntity<ApiResponseDTO<String>> getAvailability(@PathVariable Long doctorId) {
         String availability = doctorService.getAvailability(doctorId);
         return ResponseEntity.ok(new ApiResponseDTO<>("Availability fetched successfully", true, availability));
+    }
+
+    @PostMapping("/search-by-name")
+    public ResponseEntity<ApiResponseDTO<?>> searchByName(@RequestBody String name){
+       return ResponseEntity.ok(new ApiResponseDTO<>("Patients fetched with name "+name,true, doctorService.searchByName(name)));
     }
 }

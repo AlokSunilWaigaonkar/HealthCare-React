@@ -1,15 +1,12 @@
 package com.example.UserManagement.response;
 
-import com.example.UserManagement.model.Users.Doctor;
 import com.example.UserManagement.model.Users.Patient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data
@@ -40,6 +37,7 @@ public class PatientResponseDTO {
     public static class DoctorBasicInfo {
         private Long id;
         private String FirstName;
+        private String LastName;
         private String specialization;
     }
 
@@ -63,7 +61,7 @@ public class PatientResponseDTO {
 
         if (patient.getDoctors() != null) {
             this.doctors = patient.getDoctors().stream()
-                    .map(doc -> new DoctorBasicInfo(doc.getFirstName(), doc.getSpecialization()))
+                    .map(doc -> new DoctorBasicInfo(doc.getId(),doc.getFirstName(),doc.getLastName(), doc.getSpecialization()))
                     .collect(Collectors.toList());
         }
     }

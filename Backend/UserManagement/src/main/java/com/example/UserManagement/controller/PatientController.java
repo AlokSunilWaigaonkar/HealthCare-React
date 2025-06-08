@@ -43,7 +43,7 @@ public class PatientController {
         }
     }
 
-    @PostMapping("/book/{patientId}")
+    @PostMapping("/book/{patientId}/{doctorId}")
     public ResponseEntity<ApiResponseDTO<Void>> bookAppointment(@PathVariable Long patientId,
                                                           @PathVariable Long doctorId,
                                                           @RequestBody AppointmentRequest appointmentRequest) {
@@ -90,7 +90,7 @@ public class PatientController {
             PatientResponseDTO profile = patientService.getOwnProfile(principal.getName());
             return ResponseEntity.ok(profile);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiResponseDTO<>("Failed to fetch profile", false, null));
         }
     }
@@ -106,6 +106,20 @@ public class PatientController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponseDTO<>("Failed to change password", false, null));
+        }
+
+
+    }
+
+    @GetMapping("/getDoctors/{patientId}")
+    public ResponseEntity<?> getDoctorsRelatedToPatient(@PathVariable Long patientId){
+        try
+        {
+            List<PatientResponseDTO.DoctorBasicInfo> doctorInfoList = patientService.getDoctorsRelatedToPatient(patientId);
+            return ResponseEntity.ok(new ApiResponseDTO<>("Doctors fetched successfully", true, doctorInfoList));
+        }
+        catch (Exception e){
+            return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

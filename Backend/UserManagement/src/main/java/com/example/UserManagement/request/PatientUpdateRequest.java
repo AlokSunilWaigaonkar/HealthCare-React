@@ -9,8 +9,8 @@ public class PatientUpdateRequest {
     private String FirstName;
     private String LastName;
     private int age;
-    private int gender;
-    private int bloodGroup;
+    private String gender;
+    private String bloodGroup;
     private String emergencyContact;
     private Date DateOfBirth;
     private String Address;

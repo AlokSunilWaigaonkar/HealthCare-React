@@ -7,22 +7,23 @@ import com.example.UserManagement.model.Users.User;
 import com.example.UserManagement.model.VerificationToken;
 import com.example.UserManagement.repo.VerificationTokenRepo;
 import com.example.UserManagement.request.LoginRequest;
-import com.example.UserManagement.request.RefreshTokenRequest;
 import com.example.UserManagement.response.ApiResponseDTO;
 import com.example.UserManagement.service.LoginService;
 import com.example.UserManagement.service.RefreshTokenService;
 import com.example.UserManagement.service.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -42,6 +43,7 @@ public class AuthController {
             throws MessagingException, UnsupportedEncodingException {
         try {
             AuthResponse response = loginService.login(loginRequest.getEmail(), loginRequest.getPassword());
+            // response should have accessToken, refreshToken, and role
             return ResponseEntity.ok(new ApiResponseDTO<>("Login successful", true, response));
         } catch (DisabledException e) {
             User user = userService.findByEmail(loginRequest.getEmail())
@@ -62,13 +64,16 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponseDTO<Void>> logoutUser(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ApiResponseDTO<Void>> logoutUser(HttpServletRequest request) {
         String token = extractJwtFromRequest(request);
-        String email = jwtTokenUtil.getUsernameFromToken(token);
-        // You may blacklist the token here if required
-        refreshTokenService.deleteToken(email);
-
-        return ResponseEntity.ok(new ApiResponseDTO<>("User with email "+ email +" logged out successfully", true, null));
+        if (token != null) {
+            String email = jwtTokenUtil.getUsernameFromToken(token);
+            // Blacklist access token logic can be implemented if needed
+            refreshTokenService.deleteToken(email);
+            return ResponseEntity.ok(new ApiResponseDTO<>("User with email " + email + " logged out successfully", true, null));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiResponseDTO<>("No access token provided", false, null));
     }
 
     private String extractJwtFromRequest(HttpServletRequest request) {
@@ -79,21 +84,29 @@ public class AuthController {
         return null;
     }
 
-    @PostMapping("/refresh-token")
-    public ResponseEntity<AuthResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
-        String refreshToken = request.getRefreshToken();
-
-        String email = jwtTokenUtil.getUsernameFromToken(refreshToken);
-        if (email == null || !jwtTokenUtil.validateToken(refreshToken, userRegistrationDetailsService.loadUserByUsername(email))) {
-            throw new RuntimeException("Invalid refresh token");
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Refresh token missing or invalid"));
         }
 
-        // Optionally check from DB if token is valid
-        if (!refreshTokenService.isTokenValid(email, refreshToken)) {
-            throw new RuntimeException("Refresh token invalidated");
+        String refreshToken = authHeader.substring(7);
+
+        if (!jwtTokenUtil.validateToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid refresh token"));
         }
 
-        String newAccessToken = jwtTokenUtil.generateToken(email);
-        return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken,null));
+        String username = jwtTokenUtil.getUsernameFromToken(refreshToken);
+        Optional<User> userDetails = userService.findByEmail(username);
+        if (userDetails.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "User not found"));
+        }
+        String newAccessToken = jwtTokenUtil.generateToken(userDetails.get().getEmail());
+        String newRefreshToken = jwtTokenUtil.generateRefreshToken(userDetails.get().getEmail());
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("token", newAccessToken);
+        tokens.put("refreshToken", newRefreshToken); // optional if rotating
+
+        return ResponseEntity.ok(tokens);
     }
 }
