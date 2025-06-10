@@ -82,3 +82,28 @@
       font-size: 12px;
     }
   }
+  .message-box {
+    margin: 10px 0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    width: fit-content;
+    animation: fadeIn 0.3s ease-in;
+  }
+  
+  .message-box.success {
+    background-color: #e0f7e9;
+    color: #1b5e20;
+    border: 1px solid #66bb6a;
+  }
+  
+  .message-box.error {
+    background-color: #fdecea;
+    color: #b71c1c;
+    border: 1px solid #ef5350;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }

@@ -7,6 +7,7 @@ export default function DoctorsList() {
   useEffect(() => {
     api.get("/admin/get-doctors").then((res) => setDoctors(res.data.data));
   }, []);
+  console.log(doctors);
 
   const removeDoctor = async (doctorId) => {
     if (window.confirm("Are you sure you want to remove this doctor?")) {

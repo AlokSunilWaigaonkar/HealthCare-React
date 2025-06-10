@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create Axios instance
 const api = axios.create({
-  baseURL: "http://localhost:8080", // Update if deployed
+  baseURL: "http://13.48.10.193:8080", 
 });
 
 // Request Interceptor: Attach access token
@@ -37,7 +37,7 @@ api.interceptors.response.use(
         console.log("🔁 Refreshing access token...");
 
         const refreshRes = await axios.post(
-          "http://localhost:8080/auth/refresh",
+          "http://13.48.10.193:8080/auth/refresh",
           {
             refreshToken: localStorage.getItem("refreshToken"),
           },

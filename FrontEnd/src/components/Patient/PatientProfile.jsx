@@ -8,7 +8,7 @@ const PatientProfile = () => {
   const navigate = useNavigate()
 
   useEffect(()=>{
-    api.get("http://localhost:8080/patient/profile", { withCredentials: true })
+    api.get("/patient/profile", { withCredentials: true })
     .then(res =>
       setPatient(res.data)
     )

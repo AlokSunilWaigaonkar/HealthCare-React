@@ -40,7 +40,7 @@ export default function SignUp() {
   
     try {
       const res = await axios.post(
-        "http://localhost:8080/register/registerPatient",
+        "/register/registerPatient",
         formData,
         {
           headers: {

@@ -39,7 +39,7 @@ const UpdateProfile = () => {
     setLoading(true);
     setMessage(""); // Clear old message
     try {
-      await api.put(`http://localhost:8080/patient/${formData.id}/update`, formData);
+      await api.put(`/patient/${formData.id}/update`, formData);
       setMessage("Profile updated successfully!");
       setMessageType("success");
       setTimeout(()=>navigate("/patientDashBoard"),3000)

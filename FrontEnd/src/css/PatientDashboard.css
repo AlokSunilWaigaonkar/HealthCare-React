@@ -65,3 +65,42 @@
   list-style-type: none;
   padding-left: 0;
 }
+/* Add this to your PatientDashboard.css or a global css file */
+
+.floating-error {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  z-index: 9999;
+  background: #ff3b3b;
+  color: #fff;
+  padding: 16px 36px 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  animation: fadeInDown 0.4s;
+}
+
+.floating-error .close-error {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  margin-left: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -12,6 +12,7 @@ export default function RegisterDoctor() {
     await api.post("/admin/register-doctor", form);
     alert("Doctor Registered ✅");
   };
+  console.log(form)
 
   return (
     <form onSubmit={handleSubmit} className="register-doctor-form">
@@ -27,6 +28,13 @@ export default function RegisterDoctor() {
     name="lastName"
     onChange={handleChange}
     placeholder="Last Name"
+    required
+  />
+  <input
+    type="text"
+    name="licenseNumber"
+    onChange={handleChange}
+    placeholder="License Number"
     required
   />
   <input
