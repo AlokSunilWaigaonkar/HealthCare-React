@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create Axios instance
 const api = axios.create({
-  baseURL: "https://087f-13-48-10-193.ngrok-free.app", 
+  baseURL: "https://b513-13-48-10-193.ngrok-free.app", 
 });
 
 // Request Interceptor: Attach access token
@@ -37,7 +37,7 @@ api.interceptors.response.use(
         console.log("🔁 Refreshing access token...");
 
         const refreshRes = await axios.post(
-          "https://087f-13-48-10-193.ngrok-free.app/auth/refresh",
+          "https://b513-13-48-10-193.ngrok-free.app/auth/refresh",
           {
             refreshToken: localStorage.getItem("refreshToken"),
           },
