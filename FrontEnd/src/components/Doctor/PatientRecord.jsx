@@ -5,6 +5,8 @@ import { useLocation} from "react-router-dom";
 import Navbar from './Navbar';
 import { useState,useEffect } from "react";
 import api from "../../api";
+import mockEcgData from "../../data"
+
 import {
   LineChart,
   Line,
@@ -23,18 +25,18 @@ const PatientRecord = () => {
   const patientData = location.state || {};
   const [medical_records , setMedicalRecords] = useState({});
 
-  useEffect(()=>{
-    const fetchRecords = async ()=>{
+
+
+  useEffect(() => {
+    const fetchRecords = async () => {
       const res = await api.get(`iot-data/patient/${patientData.id}/recent`);
-      setMedicalRecords(res.data)
-    }
-    if(patientData.id){
-      fetchRecords();
-    }
-    
-  },[patientData.id])
+      setMedicalRecords(res.data);
+    };
   
-  console.log(medical_records)
+    if (patientData.id) fetchRecords();
+  }, [patientData.id]);
+console.log(mockEcgData);
+
   const recordsArray = Array.isArray(medical_records)
   ? medical_records
   : Object.values(medical_records);
@@ -52,13 +54,31 @@ const PatientRecord = () => {
         </div>
 
         {recordsArray.map((record, index) => {
-  let ecgData = [];
-  if (record.field5) {
-    ecgData = record.field5.split(',').map((val, i) => ({
-      x: i,
-      y: parseFloat(val)
+let ecgData = [];
+
+if (record.field5) {
+  // ✅ Use real ECG data if available
+  ecgData = record.field5.split(',').map((val, i) => ({
+    x: i * (1 / 250),  // 250Hz sampling
+    y: parseFloat(val)
+  }));
+} else {
+  // ✅ Match by patient id and record index (assuming 1-based)
+  
+  const fallback = mockEcgData.find(
+    (entry) =>
+      String(entry.id) === String(patientData.id) &&
+      entry.record === index + 1
+  );
+
+  if (fallback && fallback.ecg) {
+    ecgData = fallback.ecg.map((val, i) => ({
+      x: i * (1 / 250),  // simulate time in seconds
+      y: val
     }));
   }
+}
+const downsampled = ecgData.filter((_, i) => i % 5 === 0); // reduce points
 
   return (
     <motion.div
@@ -80,26 +100,26 @@ const PatientRecord = () => {
         <div className="ecg-graph">
           <h4>ECG (Electrocardiogram) Graph</h4>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={ecgData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="x"
-                label={{ value: 'Time (ms)', position: 'insideBottomRight', offset: -5 }}
-              />
-              <YAxis
-                label={{ value: 'Voltage (mV)', angle: -90, position: 'insideLeft' }}
-                domain={['auto', 'auto']}
-              />
-              <Tooltip formatter={(value) => `${value} mV`} />
-              <Line
-                type="monotone"
-                dataKey="y"
-                stroke="#ff4c4c"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+  <LineChart data={downsampled}>
+    <CartesianGrid strokeDasharray="3 3" />
+    <XAxis
+      dataKey="x"
+      label={{ value: 'Time (s)', position: 'insideBottomRight', offset: -5 }}
+    />
+    <YAxis
+      label={{ value: 'Voltage (mV)', angle: -90, position: 'insideLeft' }}
+      domain={[-1, 1]}
+    />
+    <Tooltip formatter={(value) => `${value} mV`} />
+    <Line
+      type="basis"
+      dataKey="y"
+      stroke="#ff4c4c"
+      strokeWidth={2}
+      dot={false}
+    />
+  </LineChart>
+</ResponsiveContainer>
         </div>
       )}
     </motion.div>

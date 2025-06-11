@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Navbar from "../MainPage/Navbar";
 import { useNavigate } from "react-router-dom";
 import "../../css/signup.css";
-import axios from "axios";
+import api from "../../api";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export default function SignUp() {
     setLoading(true); // Start loading
   
     try {
-      const res = await axios.post(
+      const res = await api.post(
         "/register/registerPatient",
         formData,
         {
