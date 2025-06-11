@@ -94,7 +94,6 @@
   
   /* Form */
   form, .form-group {
-    display: flex;
     flex-direction: column;
     gap: 14px;
     max-width: 400px;

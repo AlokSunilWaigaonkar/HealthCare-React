@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-// import "../../css/navbar.css";
+import "../../css/navbar.css";
 import Logo from "../../images/logo.png"; // Importing the patient data
 import PatientCard from "./PatientCard";
 import { useNavigate } from "react-router-dom";

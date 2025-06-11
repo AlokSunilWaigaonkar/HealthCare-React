@@ -15,7 +15,7 @@ export default function RegisterDoctor() {
   console.log(form)
 
   return (
-    <form onSubmit={handleSubmit} className="register-doctor-form">
+    <form style={{display:"flex"}} onSubmit={handleSubmit} className="register-doctor-form">
   <input
     type="text"
     name="firstName"
